@@ -225,9 +225,6 @@ public final class RbSerializer {
 		} else {
 			buffer.put(TERMINATOR_TYPE);
 		}
-		// FOR-DEBUG if (expect != buffer.position()) {
-		// FOR-DEBUG 	throw new Error("Bad size");
-		// FOR-DEBUG }
 	}
 
 	public void serialize(ByteBuffer buffer, String data) {
