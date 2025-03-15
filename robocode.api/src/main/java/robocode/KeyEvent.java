@@ -8,6 +8,12 @@
 package robocode;
 
 
+import net.sf.robocode.security.SafeComponent;
+import net.sf.robocode.serialization.ISerializableHelper;
+import net.sf.robocode.serialization.RbSerializer;
+
+import java.nio.ByteBuffer;
+
 /**
  * Super class of all events that originates from the keyboard.
  *
@@ -41,7 +47,7 @@ public abstract class KeyEvent extends Event {
 		return source;
 	}
 
-	private static class SerializableHelper implements ISerializableHelper {
+	protected static class SerializableHelper implements ISerializableHelper {
 
 		private static void serializeDetails(RbSerializer serializer, ByteBuffer buffer, java.awt.event.KeyEvent event) {
 			serializer.serialize(buffer, event.getKeyChar());
