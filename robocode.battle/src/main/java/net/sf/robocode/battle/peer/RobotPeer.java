@@ -679,11 +679,11 @@ public final class RobotPeer implements IRobotPeerBattle, IRobotPeer {
 		if (!valid) {
 			final Random random = RandomFactory.getRandom();
 
-			double maxWidth = battleRules.getBattlefieldWidth() - RobotPeer.WIDTH;
-			double maxHeight = battleRules.getBattlefieldHeight() - RobotPeer.HEIGHT;
+			double maxWidth = (double) battleRules.getBattlefieldWidth() - RobotPeer.WIDTH;
+			double maxHeight = (double) battleRules.getBattlefieldHeight() - RobotPeer.HEIGHT;
 
-			double halfRobotWidth = RobotPeer.WIDTH / 2;
-			double halfRobotHeight = RobotPeer.HEIGHT / 2;
+			double halfRobotWidth = (double) RobotPeer.WIDTH / 2;
+			double halfRobotHeight = (double) RobotPeer.HEIGHT / 2;
 
 			int sentryBorderSize = battle.getBattleRules().getSentryBorderSize();
 			int sentryBorderMoveWidth = sentryBorderSize - RobotPeer.WIDTH;
