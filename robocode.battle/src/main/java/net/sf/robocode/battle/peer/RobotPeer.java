@@ -1107,25 +1107,10 @@ public final class RobotPeer implements IRobotPeerBattle, IRobotPeer {
 		if (hitWall) {
 			addEvent(new HitWallEvent(angle));
 
-			// only fix both x and y values if hitting wall at an angle
-			if ((bodyHeading % (Math.PI / 2)) != 0) {
-				double tanHeading = tan(bodyHeading);
+			AngleCollisionAdjustment result = checkAngleWallCollision(adjustX, adjustY);
 
-				// if it hits bottom or top wall
-				if (adjustX == 0) {
-					adjustX = adjustY * tanHeading;
-				} // if it hits a side wall
-				else if (adjustY == 0) {
-					adjustY = adjustX / tanHeading;
-				} // if the robot hits 2 walls at the same time (rare, but just in case)
-				else if (abs(adjustX / tanHeading) > abs(adjustY)) {
-					adjustY = adjustX / tanHeading;
-				} else if (abs(adjustY * tanHeading) > abs(adjustX)) {
-					adjustX = adjustY * tanHeading;
-				}
-			}
-			x += adjustX;
-			y += adjustY;
+			x += result.adjustX;
+			y += result.adjustY;
 
 			if (x < minX) {
 				x = minX;
@@ -1192,26 +1177,10 @@ public final class RobotPeer implements IRobotPeerBattle, IRobotPeer {
 		if (hitWall) {
 			addEvent(new HitWallEvent(angle));
 
-			// only fix both x and y values if hitting wall at an angle
-			if ((bodyHeading % (Math.PI / 2)) != 0) {
-				double tanHeading = tan(bodyHeading);
+			AngleCollisionAdjustment result = checkAngleWallCollision(adjustX, adjustY);
 
-				// if it hits bottom or top wall
-				if (adjustX == 0) {
-					adjustX = adjustY * tanHeading;
-				} // if it hits a side wall
-				else if (adjustY == 0) {
-					adjustY = adjustX / tanHeading;
-				} // if the robot hits 2 walls at the same time (rare, but just in case)
-				else if (abs(adjustX / tanHeading) > abs(adjustY)) {
-					adjustY = adjustX / tanHeading;
-				} else if (abs(adjustY * tanHeading) > abs(adjustX)) {
-					adjustX = adjustY * tanHeading;
-				}
-			}
-
-			x += adjustX;
-			y += adjustY;
+			x += result.adjustX;
+			y += result.adjustY;
 
 			if (isOutsideBorder) {
 				if ((x - minX) <= Rules.MAX_VELOCITY) {
@@ -1237,6 +1206,37 @@ public final class RobotPeer implements IRobotPeerBattle, IRobotPeer {
 			velocity = 0;
 
 			setState(RobotState.HIT_WALL);
+		}
+	}
+
+	private AngleCollisionAdjustment checkAngleWallCollision(double adjustX, double adjustY) {
+		// only fix both x and y values if hitting wall at an angle
+		if ((bodyHeading % (Math.PI / 2)) != 0) {
+			double tanHeading = tan(bodyHeading);
+
+			// if it hits bottom or top wall
+			if (adjustX == 0) {
+				adjustX = adjustY * tanHeading;
+			} // if it hits a side wall
+			else if (adjustY == 0) {
+				adjustY = adjustX / tanHeading;
+			} // if the robot hits 2 walls at the same time (rare, but just in case)
+			else if (abs(adjustX / tanHeading) > abs(adjustY)) {
+				adjustY = adjustX / tanHeading;
+			} else if (abs(adjustY * tanHeading) > abs(adjustX)) {
+				adjustX = adjustY * tanHeading;
+			}
+		}
+        return new AngleCollisionAdjustment(adjustX, adjustY);
+	}
+
+	private static class AngleCollisionAdjustment {
+		public final double adjustX;
+		public final double adjustY;
+
+		public AngleCollisionAdjustment(double adjustX, double adjustY) {
+			this.adjustX = adjustX;
+			this.adjustY = adjustY;
 		}
 	}
 
