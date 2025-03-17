@@ -183,13 +183,21 @@ public class BattlesRunner {
 					"RESULT = " + results[0].getRobot().getNameAndVersion() + " wins, "
 					+ results[1].getRobot().getNameAndVersion() + " is second.");
 		} else {
-			RobotSpecification winnerBot = results[0].getRobot();
-			String winnerBotName = winnerBot.getTeamId() != null
-					? winnerBot.getTeamId().replaceAll(BOT_INDEX_PATTERN, "")
-					: winnerBot.getNameAndVersion(); 
+            if (results != null && results.length >= 2 && results[0] != null && results[1] != null) {
+                RobotSpecification winnerBot = results[0].getRobot();
+                if (winnerBot != null) {
+                    String winnerBotName = winnerBot.getTeamId() != null
+                            ? winnerBot.getTeamId().replaceAll(BOT_INDEX_PATTERN, "")
+                            : winnerBot.getNameAndVersion();
 
-			System.out.println(
-					"RESULT = " + winnerBotName + " wins " + results[0].getScore() + " to " + results[1].getScore());
+                    System.out.println(
+                            "RESULT = " + winnerBotName + " wins " + results[0].getScore() + " to " + results[1].getScore());
+                } else {
+                    System.err.println("ERROR: Winner bot is null.");
+                }
+            } else {
+                System.err.println("ERROR: Invalid results array.");
+            }
 		}
 	}
 
