@@ -7,7 +7,6 @@
  */
 package net.sf.robocode.io;
 
-
 import net.sf.robocode.security.HiddenAccess;
 import net.sf.robocode.util.StringUtil;
 import robocode.control.events.BattleErrorEvent;
@@ -16,7 +15,6 @@ import robocode.control.events.IBattleListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-
 
 /**
  * This is a class used for logging.
@@ -27,10 +25,10 @@ import java.io.PrintStream;
 public class Logger {
 	public static final PrintStream realOut = System.out;
 	public static final PrintStream realErr = System.err;
-	public static final boolean initialized = false;
+	public static boolean initialized = false;
 
 	private static IBattleListener logListener;
-	
+
 	private final static StringBuffer logBuffer = new StringBuffer();
 
 	public static void setLogListener(IBattleListener logListener) {
