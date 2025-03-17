@@ -7,7 +7,6 @@
  */
 package net.sf.robocode.ui.editor;
 
-
 import net.sf.robocode.core.Container;
 import net.sf.robocode.io.FileUtil;
 import net.sf.robocode.io.Logger;
@@ -24,7 +23,6 @@ import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-
 
 /**
  * The source code editor window containing all components.
@@ -59,17 +57,19 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 	final EventHandler eventHandler = new EventHandler();
 
 	class EventHandler implements ComponentListener {
-		public void componentMoved(ComponentEvent e) {}
+		public void componentMoved(ComponentEvent e) {
+		}
 
-		public void componentHidden(ComponentEvent e) {}
+		public void componentHidden(ComponentEvent e) {
+		}
 
 		public void componentShown(ComponentEvent e) {
 			new Thread(RobocodeEditor.this).start();
 		}
 
-		public void componentResized(ComponentEvent e) {}
+		public void componentResized(ComponentEvent e) {
+		}
 	}
-
 
 	/**
 	 * Action that launches the Replace dialog.
@@ -125,11 +125,32 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 			internalFrame.requestFocus();
 		}
 
-		// Make sure the internal frame is being maximized to fit the window when it is opened
+		// Make sure the internal frame is being maximized to fit the window when it is
+		// opened
 		try {
 			internalFrame.setMaximum(true);
 		} catch (PropertyVetoException e) {
 			Logger.logError(e);
+		}
+	}
+
+	public static void loadTemplateContent(String templateName) {
+		File f = new File(FileUtil.getCwd(), templateName);
+		int size = (int) (f.length());
+		byte[] buff = new byte[size];
+		FileInputStream fis = null;
+		DataInputStream dis = null;
+
+		try {
+			fis = new FileInputStream(f);
+			dis = new DataInputStream(fis);
+			dis.readFully(buff);
+			template = new String(buff);
+		} catch (IOException e) {
+			template = "Unable to read template file: " + FileUtil.getCwd() + File.separatorChar + templateName;
+		} finally {
+			FileUtil.cleanupStream(fis);
+			FileUtil.cleanupStream(dis);
 		}
 	}
 
@@ -164,26 +185,7 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 		String templateName = "templates" + File.separatorChar + "newjavafile.tpt";
 
 		String template = "";
-
-		File f = new File(FileUtil.getCwd(), templateName);
-		int size = (int) (f.length());
-		byte[] buff = new byte[size];
-
-		FileInputStream fis = null;
-		DataInputStream dis = null;
-
-		try {
-			fis = new FileInputStream(f);
-			dis = new DataInputStream(fis);
-
-			dis.readFully(buff);
-			template = new String(buff);
-		} catch (IOException e) {
-			template = "Unable to read template file: " + FileUtil.getCwd() + File.separatorChar + templateName;
-		} finally {
-			FileUtil.cleanupStream(fis);
-			FileUtil.cleanupStream(dis);
-		}
+		loadTemplateContent(templateName);
 
 		String name = "MyClass";
 
@@ -221,7 +223,7 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 	private void createNewRobot(final String robotType) {
 		final String ROBOT_NAME_DESCRIPTION = "Enter the name of your new robot.\nExample: MyFirst" + robotType
 				+ "\nNote that the name cannot be empty or contain spaces.";
-		
+
 		String message = ROBOT_NAME_DESCRIPTION;
 		String name = "";
 
@@ -302,7 +304,7 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 			}
 			packageName = packageName.trim();
 			if (packageName.length() == 0) {
-				message = ROBOT_PACKAGE_NAME_DESCRIPTION;				
+				message = ROBOT_PACKAGE_NAME_DESCRIPTION;
 				continue;
 			}
 			if (packageName.length() > MAX_PACKAGE_NAME_LENGTH) {
@@ -388,23 +390,7 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 
 		String template = "";
 
-		File f = new File(FileUtil.getCwd(), templateName);
-		int size = (int) (f.length());
-		byte[] buff = new byte[size];
-		FileInputStream fis = null;
-		DataInputStream dis = null;
-
-		try {
-			fis = new FileInputStream(f);
-			dis = new DataInputStream(fis);
-			dis.readFully(buff);
-			template = new String(buff);
-		} catch (IOException e) {
-			template = "Unable to read template file: " + FileUtil.getCwd() + File.separatorChar + templateName;
-		} finally {
-			FileUtil.cleanupStream(fis);
-			FileUtil.cleanupStream(dis);
-		}
+		loadTemplateContent(templateName);
 
 		int index = template.indexOf("$");
 
@@ -426,6 +412,7 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 		editorPane.setCaretPosition(0);
 
 		addPlaceShowFocus(editWindow);
+
 		if (repositoryManager != null) {
 			repositoryManager.refresh();
 		}
