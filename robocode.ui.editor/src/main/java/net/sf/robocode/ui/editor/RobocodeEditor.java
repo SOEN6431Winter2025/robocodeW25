@@ -134,6 +134,27 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
         }
     }
 
+    public static void loadTemplateContent(String templateName) {
+        String template = "";
+        File f = new File(FileUtil.getCwd(), templateName);
+        int size = (int) (f.length());
+        byte[] buff = new byte[size];
+        FileInputStream fis = null;
+        DataInputStream dis = null;
+
+        try {
+            fis = new FileInputStream(f);
+            dis = new DataInputStream(fis);
+            dis.readFully(buff);
+            template = new String(buff);
+        } catch (IOException e) {
+            template = "Unable to read template file: " + FileUtil.getCwd() + File.separatorChar + templateName;
+        } finally {
+            FileUtil.cleanupStream(fis);
+            FileUtil.cleanupStream(dis);
+        }
+    }
+
     public boolean close() {
         JInternalFrame[] frames = getDesktopPane().getAllFrames();
         if (frames != null) {
