@@ -72,16 +72,34 @@ public abstract class Condition {
 	 */
 	public Condition(String name, int priority) {
 		this.name = name;
+		this.priority = validatePriority(priority);
+	}
+	/**
+	 * Validates the priority and prints a message if it is out of range.
+	 *
+	 * @param priority the priority to validate
+	 * @return the validated priority (clamped between 0 and 99)
+	 */
+	private int validatePriority(int priority) {
 		if (priority < 0) {
-			System.out.println("SYSTEM: Priority must be between 0 and 99.");
-			System.out.println("SYSTEM: Priority for condition " + name + " will be 0.");
-			priority = 0;
+			printPriorityMessage(name, 0);
+			return 0;
 		} else if (priority > 99) {
-			System.out.println("SYSTEM: Priority must be between 0 and 99.");
-			System.out.println("SYSTEM: Priority for condition " + name + " will be 99.");
-			priority = 99;
+			printPriorityMessage(name, 99);
+			return 99;
 		}
-		this.priority = priority;
+		return priority;
+	}
+
+	/**
+	 * Prints a message when the priority is out of range.
+	 *
+	 * @param name the name of the condition
+	 * @param newPriority the new priority to be set
+	 */
+	private void printPriorityMessage(String name, int newPriority) {
+		System.out.println("SYSTEM: Priority must be between 0 and 99.");
+		System.out.println("SYSTEM: Priority for condition " + name + " will be " + newPriority + ".");
 	}
 
 	/**

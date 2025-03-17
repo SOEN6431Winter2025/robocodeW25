@@ -163,30 +163,14 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 
 		String templateName = "templates" + File.separatorChar + "newjavafile.tpt";
 
-		String template = "";
-
-		File f = new File(FileUtil.getCwd(), templateName);
-		int size = (int) (f.length());
-		byte[] buff = new byte[size];
-
-		FileInputStream fis = null;
-		DataInputStream dis = null;
-
-		try {
-			fis = new FileInputStream(f);
-			dis = new DataInputStream(fis);
-
-			dis.readFully(buff);
-			template = new String(buff);
-		} catch (IOException e) {
-			template = "Unable to read template file: " + FileUtil.getCwd() + File.separatorChar + templateName;
-		} finally {
-			FileUtil.cleanupStream(fis);
-			FileUtil.cleanupStream(dis);
-		}
+		String template = readTemplateFile(templateName);
 
 		String name = "MyClass";
 
+		applyTemplateReplacements(packageName, editWindow, template, name);
+	}
+
+	private void applyTemplateReplacements(String packageName, EditWindow editWindow, String template, String name) {
 		int index = template.indexOf("$");
 
 		while (index >= 0) {
@@ -208,6 +192,31 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 		editorPane.setCaretPosition(0);
 
 		addPlaceShowFocus(editWindow);
+	}
+
+	private String readTemplateFile(String templateName) {
+		String template = "";
+
+		File f = new File(FileUtil.getCwd(), templateName);
+		int size = (int) (f.length());
+		byte[] buff = new byte[size];
+
+		FileInputStream fis = null;
+		DataInputStream dis = null;
+
+		try {
+			fis = new FileInputStream(f);
+			dis = new DataInputStream(fis);
+
+			dis.readFully(buff);
+			template = new String(buff);
+		} catch (IOException e) {
+			template = "Unable to read template file: " + FileUtil.getCwd() + File.separatorChar + templateName;
+		} finally {
+			FileUtil.cleanupStream(fis);
+			FileUtil.cleanupStream(dis);
+		}
+		return template;
 	}
 
 	public void createNewRobot() {
@@ -386,46 +395,9 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 
 		String templateName = "templates" + File.separatorChar + "new" + robotType.toLowerCase() + ".tpt";
 
-		String template = "";
+		String template = readTemplateFile(templateName);
 
-		File f = new File(FileUtil.getCwd(), templateName);
-		int size = (int) (f.length());
-		byte[] buff = new byte[size];
-		FileInputStream fis = null;
-		DataInputStream dis = null;
-
-		try {
-			fis = new FileInputStream(f);
-			dis = new DataInputStream(fis);
-			dis.readFully(buff);
-			template = new String(buff);
-		} catch (IOException e) {
-			template = "Unable to read template file: " + FileUtil.getCwd() + File.separatorChar + templateName;
-		} finally {
-			FileUtil.cleanupStream(fis);
-			FileUtil.cleanupStream(dis);
-		}
-
-		int index = template.indexOf("$");
-
-		while (index >= 0) {
-			if (template.startsWith("$CLASSNAME", index)) {
-				template = template.substring(0, index) + name + template.substring(index + 10);
-				index += name.length();
-			} else if (template.startsWith("$PACKAGE", index)) {
-				template = template.substring(0, index) + packageName + template.substring(index + 8);
-				index += packageName.length();
-			} else {
-				index++;
-			}
-			index = template.indexOf("$", index);
-		}
-
-		EditorPane editorPane = editWindow.getEditorPane();
-		editorPane.setText(template);
-		editorPane.setCaretPosition(0);
-
-		addPlaceShowFocus(editWindow);
+		applyTemplateReplacements(packageName, editWindow, template, name);
 		if (repositoryManager != null) {
 			repositoryManager.refresh();
 		}

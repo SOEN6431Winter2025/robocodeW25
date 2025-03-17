@@ -223,7 +223,6 @@ public final class RbSerializer {
 		} else {
 			buffer.put(TERMINATOR_TYPE);
 		}
-
 	}
 
 	public void serialize(ByteBuffer buffer, String data) {

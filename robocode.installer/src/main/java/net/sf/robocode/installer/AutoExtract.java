@@ -62,6 +62,21 @@ public class AutoExtract implements ActionListener {
         return d;
     }
 
+    /**
+     * Refactored method to remove code duplication in shortcut creation.
+     */
+    private void createShortcut(PrintStream out, String path, String name, File installDir, String runnable) {
+        out.println("Set link = Shell.CreateShortcut(" + path + "\\" + name + ".lnk")
+        out.println("link.Arguments = \"\"");
+        out.println("link.Description = \"" + name + "\"");
+        out.println("link.HotKey = \"\"");
+        out.println("link.IconLocation = \"" + escaped(installDir.getAbsolutePath()) + "\\\\robocode.ico,0\"");
+        out.println("link.TargetPath = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + runnable + "\"");
+        out.println("link.WindowStyle = 1");
+        out.println("link.WorkingDirectory = \"" + escaped(installDir.getAbsolutePath()) + "\"");
+        out.println("link.Save()");
+    }
+
     private boolean acceptLicense() {
         StringBuffer licenseText = new StringBuffer();
 
@@ -538,82 +553,71 @@ public class AutoExtract implements ActionListener {
         }
     }
 
+    /**
+     * Refactored method to reuse shortcut creation logic.
+     */
     private boolean createWindowsShortcuts(File installDir, String runnable, String folder, String name) {
-        int rc = isSilent ? JOptionPane.YES_NO_OPTION
-                : JOptionPane.showConfirmDialog(null,
-                "Would you like to install a shortcut to Robocode in the Start menu? (Recommended)", "Create Shortcuts",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
+        int rc = isSilent ? JOptionPane.YES_NO_OPTION : JOptionPane.showConfirmDialog(
+                null,
+                "Would you like to install a shortcut to Robocode in the Start menu? (Recommended)",
+                "Create Shortcuts",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
         if (rc != JOptionPane.YES_OPTION) {
             return false;
         }
 
-        String command = getWindowsCmd() + " cscript.exe ";
-
         try {
             File shortcutMaker = new File(installDir, "makeshortcut.vbs");
-            PrintStream out = new PrintStream(new FileOutputStream(shortcutMaker));
+            try (PrintStream out = new PrintStream(new FileOutputStream(shortcutMaker))) {
+                out.println("WScript.Echo(\"Creating shortcuts...\")");
+                out.println("Set Shell = CreateObject (\"WScript.Shell\")");
+                out.println("Set fso = CreateObject(\"Scripting.FileSystemObject\")");
+                out.println("ProgramsPath = Shell.SpecialFolders(\"Programs\")");
+                out.println("if (not(fso.folderExists(ProgramsPath + \\\"\\" + folder + ")) Then");
+                out.println("    fso.CreateFolder(ProgramsPath + \\\"\\" + folder + ")");
+                out.println("End If");
 
-            out.println("WScript.Echo(\"Creating shortcuts...\")");
-            out.println("Set Shell = CreateObject (\"WScript.Shell\")");
-            out.println("Set fso = CreateObject(\"Scripting.FileSystemObject\")");
-            out.println("ProgramsPath = Shell.SpecialFolders(\"Programs\")");
-            out.println("if (not(fso.folderExists(ProgramsPath + \"\\\\" + folder + "\"))) Then");
-            out.println("	fso.CreateFolder(ProgramsPath + \"\\\\" + folder + "\")");
-            out.println("End If");
-            out.println("Set link = Shell.CreateShortcut(ProgramsPath + \"\\\\" + folder + "\\\\" + name + ".lnk\")");
-            out.println("link.Arguments = \"\"");
-            out.println("link.Description = \"" + name + "\"");
-            out.println("link.HotKey = \"\"");
-            out.println("link.IconLocation = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + "robocode.ico,0\"");
-            out.println("link.TargetPath = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + runnable + "\"");
-            out.println("link.WindowStyle = 1");
-            out.println("link.WorkingDirectory = \"" + escaped(installDir.getAbsolutePath()) + "\"");
-            out.println("link.Save()");
-            out.println("DesktopPath = Shell.SpecialFolders(\"Desktop\")");
-            out.println("Set link = Shell.CreateShortcut(DesktopPath + \"\\\\" + name + ".lnk\")");
-            out.println("link.Arguments = \"\"");
-            out.println("link.Description = \"" + name + "\"");
-            out.println("link.HotKey = \"\"");
-            out.println("link.IconLocation = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + "robocode.ico,0\"");
-            out.println("link.TargetPath = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + runnable + "\"");
-            out.println("link.WindowStyle = 1");
-            out.println("link.WorkingDirectory = \"" + escaped(installDir.getAbsolutePath()) + "\"");
-            out.println("link.Save()");
-            out.println("WScript.Echo(\"Shortcuts created.\")");
+                // Calling the refactored method twice for Start Menu and Desktop
+                createShortcut(out, "ProgramsPath + \"\\" + folder", name, installDir, runnable);
+                        out.println("DesktopPath = Shell.SpecialFolders(\"Desktop\")");
+                createShortcut(out, "DesktopPath", name, installDir, runnable);
 
-            out.close();
-
-            Process p = Runtime.getRuntime().exec(command + " makeshortcut.vbs", null, installDir);
+                out.println("WScript.Echo(\"Shortcuts created.\")");
+            }
+            Process p = Runtime.getRuntime().exec(getWindowsCmd() + " cscript.exe makeshortcut.vbs", null, installDir);
             int rv = p.waitFor();
-
             if (rv != 0) {
                 System.err.println("Can't create shortcut: " + shortcutMaker);
                 return false;
             }
             if (!isSilent) {
-                JOptionPane.showMessageDialog(null,
-                        message + "\n" + "A Robocode program group has been added to your Start menu\n"
-                                + "A Robocode icon has been added to your desktop.");
+                JOptionPane.showMessageDialog(null, "A Robocode program group has been added to your Start menu\n" +
+                        "A Robocode icon has been added to your desktop.");
             }
-            if (!shortcutMaker.delete()) {
-                System.err.println("Can't delete: " + shortcutMaker);
-            }
-            return true;
+            return shortcutMaker.delete();
         } catch (Exception e) {
             e.printStackTrace(System.err);
-        }
-
-        return false;
-    }
-
-    private void createFileAssociations(File installDir) {
-        if (isWindowsOS()) {
-            createWindowsFileAssociations(installDir);
+            return false;
         }
     }
 
-    private void createWindowsFileAssociations(File installDir) {
+    private static String escaped(String s) {
+        return s.replace("\\", "\\\\");
+    }
+
+    private static boolean isWindowsOS() {
+        return osName.startsWith("Windows ");
+    }
+
+    private static String getWindowsCmd() {
+        return (osName.equals("Windows 95") || osName.equals("Windows 98") || osName.equals("Windows ME")) ? "command.com /C " : "cmd.exe /C ";
+    }
+}
+
+
+private void createWindowsFileAssociations(File installDir) {
         int rc = JOptionPane.showConfirmDialog(null,
                 "Would you like to create file associations for Robocode in\n"
                         + "the Windows Registry for the file extensions .battle and .br?\n"

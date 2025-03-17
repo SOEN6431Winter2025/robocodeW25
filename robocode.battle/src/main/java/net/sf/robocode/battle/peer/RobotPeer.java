@@ -790,6 +790,19 @@ public final class RobotPeer implements IRobotPeerBattle, IRobotPeer {
 		return true;
 	}
 
+	// Helper method to create the RobotStatus object
+	private RobotStatus createRobotStatus() {
+		final ExecCommands currentCommands = commands.get();
+
+		int others = battle.countActiveParticipants() - (isAlive() ? 1 : 0);
+		int numSentries = battle.countActiveSentries();
+
+		return HiddenAccess.createStatus(energy, x, y, bodyHeading, gunHeading, radarHeading, velocity,
+				currentCommands.getBodyTurnRemaining(), currentCommands.getRadarTurnRemaining(),
+				currentCommands.getGunTurnRemaining(), currentCommands.getDistanceRemaining(), gunHeat, others, numSentries,
+				battle.getRoundNum(), battle.getNumRounds(), battle.getTime());
+	}
+
 	public void startRound(long waitMillis, int waitNanos) {
 		Logger.logMessage(".", false);
 
@@ -803,14 +816,7 @@ public final class RobotPeer implements IRobotPeerBattle, IRobotPeer {
 
 		currentCommands = newExecCommands;
 
-		int others = battle.countActiveParticipants() - (isAlive() ? 1 : 0);
-		int numSentries = battle.countActiveSentries();
-
-		RobotStatus stat = HiddenAccess.createStatus(energy, x, y, bodyHeading, gunHeading, radarHeading, velocity,
-				currentCommands.getBodyTurnRemaining(), currentCommands.getRadarTurnRemaining(),
-				currentCommands.getGunTurnRemaining(), currentCommands.getDistanceRemaining(), gunHeat, others, numSentries,
-				battle.getRoundNum(), battle.getNumRounds(), battle.getTime());
-
+		RobotStatus stat = createRobotStatus();  // Use the new helper method
 		status.set(stat);
 		robotProxy.startRound(currentCommands, stat);
 
@@ -1729,17 +1735,7 @@ public final class RobotPeer implements IRobotPeerBattle, IRobotPeer {
 	}
 
 	public void publishStatus(long currentTurn) {
-
-		final ExecCommands currentCommands = commands.get();
-
-		int others = battle.countActiveParticipants() - (isDead() || isSentryRobot() ? 0 : 1);
-		int numSentries = battle.countActiveSentries();
-
-		RobotStatus stat = HiddenAccess.createStatus(energy, x, y, bodyHeading, gunHeading, radarHeading, velocity,
-				currentCommands.getBodyTurnRemaining(), currentCommands.getRadarTurnRemaining(),
-				currentCommands.getGunTurnRemaining(), currentCommands.getDistanceRemaining(), gunHeat, others, numSentries,
-				battle.getRoundNum(), battle.getNumRounds(), battle.getTime());
-
+		RobotStatus stat = createRobotStatus();  // Use the new helper method
 		status.set(stat);
 	}
 

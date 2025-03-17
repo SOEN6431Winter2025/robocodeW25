@@ -99,8 +99,7 @@ public final class InteractiveHandler implements KeyEventDispatcher, MouseListen
 		battleManager.sendInteractiveEvent(event);
 	}
 
-	private MouseEvent mirroredMouseEvent(final MouseEvent e) {
-
+	private Point calculateMousePosition(final MouseEvent e) {
 		double scale;
 		BattleProperties battleProps = battleManager.getBattleProperties();
 
@@ -121,33 +120,19 @@ public final class InteractiveHandler implements KeyEventDispatcher, MouseListen
 		int x = (int) ((e.getX() - dx) / scale + 0.5);
 		int y = (int) (fHeight - (e.getY() - dy) / scale + 0.5);
 
-		return new MouseEvent(SafeComponent.getSafeEventComponent(), e.getID(), e.getWhen(), e.getModifiersEx(), x, y,
-				e.getClickCount(), e.isPopupTrigger(), e.getButton());
+		return new Point(x, y);
+	}
+
+	private MouseEvent mirroredMouseEvent(final MouseEvent e) {
+		Point p = calculateMousePosition(e);
+		return new MouseEvent(SafeComponent.getSafeEventComponent(), e.getID(), e.getWhen(), e.getModifiersEx(),
+				p.x, p.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
 	}
 
 	private MouseWheelEvent mirroredMouseWheelEvent(final MouseWheelEvent e) {
-
-		double scale;
-		BattleProperties battleProps = battleManager.getBattleProperties();
-
-		int vWidth = battleView.getWidth();
-		int vHeight = battleView.getHeight();
-		int fWidth = battleProps.getBattlefieldWidth();
-		int fHeight = battleProps.getBattlefieldHeight();
-
-		if (vWidth < fWidth || vHeight < fHeight) {
-			scale = min((double) vWidth / fWidth, (double) vHeight / fHeight);
-		} else {
-			scale = 1;
-		}
-
-		double dx = (vWidth - scale * fWidth) / 2;
-		double dy = (vHeight - scale * fHeight) / 2;
-
-		int x = (int) ((e.getX() - dx) / scale + 0.5);
-		int y = (int) (fHeight - (e.getY() - dy) / scale + 0.5);
-
-		return new MouseWheelEvent(SafeComponent.getSafeEventComponent(), e.getID(), e.getWhen(), e.getModifiersEx(), x,
-				y, e.getClickCount(), e.isPopupTrigger(), e.getScrollType(), e.getScrollAmount(), e.getWheelRotation());
+		Point p = calculateMousePosition(e);
+		return new MouseWheelEvent(SafeComponent.getSafeEventComponent(), e.getID(), e.getWhen(), e.getModifiersEx(),
+				p.x, p.y, e.getClickCount(), e.isPopupTrigger(), e.getScrollType(),
+				e.getScrollAmount(), e.getWheelRotation());
 	}
 }
