@@ -8,7 +8,7 @@
 package robocode.robocodeGL;
 
 
-import gl4java.GLFunc;
+import gl_java.GLFunc;
 import java.awt.Color;
 
 
