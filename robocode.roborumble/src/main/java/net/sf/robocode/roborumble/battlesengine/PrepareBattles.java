@@ -134,6 +134,7 @@ public class PrepareBattles {
 	}
 
 	public boolean createSmartBattlesList() {
+
 		List<String> namesAll = new ArrayList<String>();
 		List<String> namesMini = new ArrayList<String>();
 		List<String> namesMicro = new ArrayList<String>();
@@ -146,67 +147,16 @@ public class PrepareBattles {
 
 		List<String> priorityBattles = new ArrayList<String>();
 
+
+//----------------------------------------------------------------------//
+	
+
 		// Read participants
 
-		BufferedReader br = null;
-
-		try {
-			FileReader fr = new FileReader(participantsfile);
-
-			br = new BufferedReader(fr);
-			String participant;
-
-			while ((participant = br.readLine()) != null) {
-				if (participant.indexOf(",") != -1) {
-					String name = participant.substring(0, participant.indexOf(","));
-
-					if (isExcluded(name)) {
-						continue; // ignore excluded participant
-					}
-					String jar = name.replace(' ', '_') + ".jar";
-					boolean exists = (new File(botsrepository + jar)).exists();
-
-					if (exists) {
-						namesAll.add(name);
-						if (size.checkCompetitorForSize(name, 1500)) {
-							namesMini.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 750)) {
-							namesMicro.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 250)) {
-							namesNano.add(name);
-						}
-						if (robotHasPriority(name, generalratings)) {
-							priorityAll.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 1500) && robotHasPriority(name, miniratings)) {
-							priorityMini.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 750) && robotHasPriority(name, microratings)) {
-							priorityMicro.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 250) && robotHasPriority(name, nanoratings)) {
-							priorityNano.add(name);
-						}
-						if (!isRobotInRatings(name)) {
-							namesNoRanking.add(name);
-						}
-					}
-				}
-			}
-		} catch (IOException e) {
-			System.out.println("Participants file not found ... Aborting");
-			System.out.println(e);
+		if (extracted(namesAll, namesMini, namesMicro, namesNano, priorityAll, priorityMini, priorityMicro, priorityNano, namesNoRanking))
 			return false;
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException ignored) {}
-			}
-		}
-
+		BufferedReader br;
+//-----------------------------------------------------------------------//
 		// Read priority battles
 
 		br = null;
@@ -301,6 +251,68 @@ public class PrepareBattles {
 		return true;
 	}
 
+	private boolean extracted(List<String> namesAll, List<String> namesMini, List<String> namesMicro, List<String> namesNano, List<String> priorityAll, List<String> priorityMini, List<String> priorityMicro, List<String> priorityNano, List<String> namesNoRanking) {
+		BufferedReader br = null;
+
+		try {
+			FileReader fr = new FileReader(participantsfile);
+
+			br = new BufferedReader(fr);
+			String participant;
+
+			while ((participant = br.readLine()) != null) {
+				if (participant.indexOf(",") != -1) {
+					String name = participant.substring(0, participant.indexOf(","));
+
+					if (isExcluded(name)) {
+						continue; // ignore excluded participant
+					}
+					String jar = name.replace(' ', '_') + ".jar";
+					boolean exists = (new File(botsrepository + jar)).exists();
+
+					if (exists) {
+						namesAll.add(name);
+						if (size.checkCompetitorForSize(name, 1500)) {
+							namesMini.add(name);
+						}
+						if (size.checkCompetitorForSize(name, 750)) {
+							namesMicro.add(name);
+						}
+						if (size.checkCompetitorForSize(name, 250)) {
+							namesNano.add(name);
+						}
+						if (robotHasPriority(name, generalratings)) {
+							priorityAll.add(name);
+						}
+						if (size.checkCompetitorForSize(name, 1500) && robotHasPriority(name, miniratings)) {
+							priorityMini.add(name);
+						}
+						if (size.checkCompetitorForSize(name, 750) && robotHasPriority(name, microratings)) {
+							priorityMicro.add(name);
+						}
+						if (size.checkCompetitorForSize(name, 250) && robotHasPriority(name, nanoratings)) {
+							priorityNano.add(name);
+						}
+						if (!isRobotInRatings(name)) {
+							namesNoRanking.add(name);
+						}
+					}
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("Participants file not found ... Aborting");
+			System.out.println(e);
+			return true;
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException ignored) {}
+			}
+		}
+		return false;
+	}
+
 	private String[] getRandomBots(List<String> list1, List<String> list2) {
 		int bot1 = RANDOM.nextInt(list1.size());
 		int bot2 = RANDOM.nextInt(list2.size());
@@ -363,64 +375,9 @@ public class PrepareBattles {
 
 		// Read participants
 
-		BufferedReader br = null;
-
-		try {
-			FileReader fr = new FileReader(participantsfile);
-
-			br = new BufferedReader(fr);
-			String participant;
-
-			while ((participant = br.readLine()) != null) {
-				if (participant.indexOf(",") != -1) {
-					String name = participant.substring(0, participant.indexOf(","));
-
-					if (isExcluded(name)) {
-						continue; // ignore excluded participant
-					}
-					String jar = name.replace(' ', '_') + ".jar";
-					boolean exists = (new File(botsrepository + jar)).exists();
-
-					if (exists) {
-						namesAll.add(name);
-						if (size.checkCompetitorForSize(name, 1500)) {
-							namesMini.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 750)) {
-							namesMicro.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 250)) {
-							namesNano.add(name);
-						}
-						if (robotHasPriority(name, generalratings)) {
-							priorityAll.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 1500) && robotHasPriority(name, miniratings)) {
-							priorityMini.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 750) && robotHasPriority(name, microratings)) {
-							priorityMicro.add(name);
-						}
-						if (size.checkCompetitorForSize(name, 250) && robotHasPriority(name, nanoratings)) {
-							priorityNano.add(name);
-						}
-						if (!isRobotInRatings(name)) {
-							namesNoRanking.add(name);
-						}
-					}
-				}
-			}
-		} catch (IOException e) {
-			System.out.println("Participants file not found ... Aborting");
-			System.out.println(e);
+		if (extracted(namesAll, namesMini, namesMicro, namesNano, priorityAll, priorityMini, priorityMicro, priorityNano, namesNoRanking))
 			return false;
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException ignored) {}
-			}
-		}
+		BufferedReader br;
 
 		// Read priority battles
 
