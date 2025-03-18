@@ -7,7 +7,6 @@
  */
 package net.sf.robocode.battle;
 
-
 import net.sf.robocode.battle.events.BattleEventDispatcher;
 import net.sf.robocode.core.Container;
 import net.sf.robocode.host.ICpuManager;
@@ -33,7 +32,6 @@ import robocode.control.events.IBattleListener;
 
 import java.io.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 
 /**
  * @author Mathew A. Nelson (original)
@@ -62,7 +60,10 @@ public class BattleManager implements IBattleManager {
 	private int pauseCount = 0;
 	private final AtomicBoolean isManagedTPS = new AtomicBoolean(false);
 
-	public BattleManager(ISettingsManager properties, IRepositoryManager repositoryManager, IHostManager hostManager, ICpuManager cpuManager, BattleEventDispatcher battleEventDispatcher, IRecordManager recordManager) { // NO_UCD (unused code)
+	public BattleManager(ISettingsManager properties, IRepositoryManager repositoryManager, IHostManager hostManager,
+			ICpuManager cpuManager, BattleEventDispatcher battleEventDispatcher, IRecordManager recordManager) { // NO_UCD
+																													// (unused
+																													// code)
 		this.properties = properties;
 		this.recordManager = recordManager;
 		this.repositoryManager = repositoryManager;
@@ -71,6 +72,7 @@ public class BattleManager implements IBattleManager {
 		this.battleEventDispatcher = battleEventDispatcher;
 		Logger.setLogListener(battleEventDispatcher);
 		battleProperties = new BattleProperties(properties);
+		System.out.println("hello");
 	}
 
 	public synchronized void cleanup() {
@@ -90,7 +92,8 @@ public class BattleManager implements IBattleManager {
 	}
 
 	// Called from the RobocodeEngine
-	public void startNewBattle(BattleSpecification spec, String initialPositions, boolean waitTillOver, boolean enableRecording) {
+	public void startNewBattle(BattleSpecification spec, String initialPositions, boolean waitTillOver,
+			boolean enableRecording) {
 		battleProperties = new BattleProperties();
 		battleProperties.setBattlefieldWidth(spec.getBattlefield().getWidth());
 		battleProperties.setBattlefieldHeight(spec.getBattlefield().getHeight());
@@ -122,14 +125,15 @@ public class BattleManager implements IBattleManager {
 		}
 	}
 
-	private void startNewBattleImpl(RobotSpecification[] battlingRobotsList, boolean waitTillOver, boolean enableRecording) {
+	private void startNewBattleImpl(RobotSpecification[] battlingRobotsList, boolean waitTillOver,
+			boolean enableRecording) {
 		stop(true);
 
 		logMessage("Preparing battle...");
 
 		final boolean recording = (properties.getOptionsCommonEnableReplayRecording()
 				&& System.getProperty("TESTING", "none").equals("none"))
-						|| enableRecording;
+				|| enableRecording;
 
 		if (recording) {
 			recordManager.attachRecorder(battleEventDispatcher);
@@ -165,7 +169,8 @@ public class BattleManager implements IBattleManager {
 		battleThread.start();
 
 		// Wait until the realBattle is running and ended.
-		// This must be done as a new realBattle could be started immediately after this one causing
+		// This must be done as a new realBattle could be started immediately after this
+		// one causing
 		// multiple realBattle threads to run at the same time, which must be prevented!
 		realBattle.waitTillStarted();
 		if (waitTillOver) {
@@ -214,7 +219,8 @@ public class BattleManager implements IBattleManager {
 			if (battleFilename.indexOf(File.separatorChar) < 0) {
 				try {
 					battleFilename = FileUtil.getBattlesDir().getCanonicalPath() + File.separatorChar + battleFilename;
-				} catch (IOException ignore) {}
+				} catch (IOException ignore) {
+				}
 			}
 			if (!battleFilename.endsWith(".battle")) {
 				battleFilename += ".battle";
