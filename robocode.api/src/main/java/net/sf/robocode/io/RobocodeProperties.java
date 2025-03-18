@@ -15,9 +15,10 @@ package net.sf.robocode.io;
  */
 public final class RobocodeProperties {
 
+	private static final String DEFAULT_FALSE = "false";
 	// These properties can only be set at startup
-	private static final boolean NO_SECURITY = System.getProperty("NOSECURITY", "false").equals("true");
-	private static final boolean DEBUG = System.getProperty("debug", "false").equals("true");
+	private static final boolean NO_SECURITY = System.getProperty("NOSECURITY", DEFAULT_FALSE).equals("true");
+	private static final boolean DEBUG = System.getProperty("debug", DEFAULT_FALSE).equals("true");
 
 	private RobocodeProperties() {}
 
@@ -74,10 +75,10 @@ public final class RobocodeProperties {
 	 * @return true if testing is enabled; false is testing is disabled.
 	 */
 	public static boolean isTestingOn() {
-		return System.getProperty("TESTING", "false").equals("true");
+		return System.getProperty("TESTING", DEFAULT_FALSE).equals("true");
 	}
 
 	public static boolean isPaintingOn() {
-		return System.getProperty("PAINTING", "false").equals("true");
+		return System.getProperty("PAINTING", DEFAULT_FALSE).equals("true");
 	}
 }

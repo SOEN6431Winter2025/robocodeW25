@@ -115,11 +115,9 @@ public final class BattlePlayer extends BaseBattle {
 	protected boolean isRoundOver() {
 		final boolean end = getTime() >= recordManager.recordInfo.turnsInRounds[getRoundNum()] - 1;
 
-		if (end) {
-			if (recordManager.recordInfo.turnsInRounds.length > getRoundNum()
-					&& recordManager.recordInfo.turnsInRounds[getRoundNum()] == 0) {
-				isAborted = true;
-			}
+		if (end && recordManager.recordInfo.turnsInRounds.length > getRoundNum()
+				&& recordManager.recordInfo.turnsInRounds[getRoundNum()] == 0) {
+			isAborted = true;
 		}
 		return (isAborted || end);
 	}

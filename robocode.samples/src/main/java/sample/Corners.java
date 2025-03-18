@@ -52,7 +52,8 @@ public class Corners extends Robot {
 		int gunIncrement = 3;
 
 		// Spin gun back and forth
-		while (true) {
+		int iterations = 60; // Adding an end condition for demonstration
+		while (iterations-- > 0) {
 			for (int i = 0; i < 30; i++) {
 				turnGunLeft(gunIncrement);
 			}

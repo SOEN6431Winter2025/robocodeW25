@@ -96,7 +96,7 @@ public abstract class _RobotBase implements IBasicRobot, Runnable {
 	 */
 	@Override
 	public String toString() {
-		if (peer == null) return null;
+		if (peer == null) return "";
 		return peer.getName() + " (" + (int) peer.getEnergy() + ") X" + (int) peer.getX() + " Y" + (int) peer.getY()
 				+ " ~" + Utils.angleToApproximateDirection(peer.getBodyHeading());
 	}
