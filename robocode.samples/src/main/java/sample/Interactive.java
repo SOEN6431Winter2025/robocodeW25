@@ -215,9 +215,6 @@ public class Interactive extends AdvancedRobot {
 	public void onPaint(Graphics2D g) {
 		// Draw a red cross hair with the center at the current aim
 		// coordinate (x,y)
-		g.setColor(Color.RED);
-		g.drawOval(aimX - 15, aimY - 15, 30, 30);
-		g.drawLine(aimX, aimY - 4, aimX, aimY + 4);
-		g.drawLine(aimX - 4, aimY, aimX + 4, aimY);
+		Utility.drawRedHair(g, aimX, aimY);
 	}
 }

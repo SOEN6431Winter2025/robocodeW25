@@ -132,17 +132,27 @@ public class PrepareBattles {
 		battlesfile.closeWrite();
 		return true;
 	}
+    
+    private List<List<String>> initializeBattleLists() {
+        List<List<String>> lists = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            lists.add(new ArrayList<>());
+        }
+        return lists;
+    }
 
 	public boolean createSmartBattlesList() {
-		List<String> namesAll = new ArrayList<String>();
-		List<String> namesMini = new ArrayList<String>();
-		List<String> namesMicro = new ArrayList<String>();
-		List<String> namesNano = new ArrayList<String>();
-		List<String> namesNoRanking = new ArrayList<String>();
-		List<String> priorityAll = new ArrayList<String>();
-		List<String> priorityMini = new ArrayList<String>();
-		List<String> priorityMicro = new ArrayList<String>();
-		List<String> priorityNano = new ArrayList<String>();
+        List<List<String>> battleLists = initializeBattleLists();
+        List<String> namesAll = battleLists.get(0);
+        List<String> namesMini = battleLists.get(1);
+        List<String> namesMicro = battleLists.get(2);
+        List<String> namesNano = battleLists.get(3);
+        List<String> namesNoRanking = battleLists.get(4);
+        List<String> priorityAll = battleLists.get(5);
+        List<String> priorityMini = battleLists.get(6);
+        List<String> priorityMicro = battleLists.get(7);
+        List<String> priorityNano = battleLists.get(8);
+        List<String> priorityBattles = battleLists.get(9);
 
 		List<String> priorityBattles = new ArrayList<String>();
 

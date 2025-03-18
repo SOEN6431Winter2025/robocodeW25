@@ -114,7 +114,7 @@ public class BattleRankingTableModel extends AbstractTableModel {
 
 		switch (col) {
 		case 0:
-			return getPlacementString(row + 1);
+			return BattleResultsTableModel.getPlacementString(row + 1);
 
 		case 1:
 			return statistics.getName();
@@ -178,22 +178,5 @@ public class BattleRankingTableModel extends AbstractTableModel {
 		default:
 			return "";
 		}
-	}
-
-	private static String getPlacementString(int i) {
-		String result = "" + i;
-
-		if (i > 3 && i < 20) {
-			result += "th";
-		} else if (i % 10 == 1) {
-			result += "st";
-		} else if (i % 10 == 2) {
-			result += "nd";
-		} else if (i % 10 == 3) {
-			result += "rd";
-		} else {
-			result += "th";
-		}
-		return result;
 	}
 }
