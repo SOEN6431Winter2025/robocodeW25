@@ -10,7 +10,7 @@ package robocode.robocodeGL;
 
 import java.awt.Color;
 
-import gl4java.GLFunc;
+import gl_java.GLFunc;
 
 
 /**

@@ -8,8 +8,8 @@
 package robocode.robocodeGL;
 
 
-import gl4java.GLFont;
-import gl4java.GLFunc;
+import gl_java.GLFont;
+import gl_java.GLFunc;
 
 
 /**
